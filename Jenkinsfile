@@ -9,14 +9,6 @@ pipeline {
         githubPush() // Automatically triggered by webhooks on GitHub push events
     }
 
-    def changesetExistsInMain() {
-        return env.BRANCH_NAME == 'main' && currentBuild.changeSets.size() > 0
-    }
-
-    def changesetExistsInRelease() {
-        return env.BRANCH_NAME == 'release-20231226' && currentBuild.changeSets.size() > 0
-    }
-
     stages {
         stage('Build') {
             when {
@@ -30,7 +22,7 @@ pipeline {
 
         stage('Deploy to Dev') {
             when {
-                expression { changesetExistsInMain() }
+                expression { env.BRANCH_NAME == 'main' }
             }
             steps {
                 echo 'Deploying to Dev...'
@@ -40,7 +32,7 @@ pipeline {
 
         stage('Deploy to QA') {
             when {
-                expression { changesetExistsInRelease() }
+                expression { env.BRANCH_NAME == 'release-20231226' }
             }
             steps {
                 echo 'Deploying to QA...'
